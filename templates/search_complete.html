@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if arrangement.host %}
+    <h3>We have match for you</h3>
+        <p>
+        {{ arrangement.host.name|capfirst }}({{ arrangement.host.age }} y.o.)
+        </p>
+        <a href="{% url "friends:main" %}">Back to main</a>
+    {% else %}
+         <h3>We have nothing for you</h3>
+         <a href="{% url "friends:main" %}">Back to main</a>
+    {% endif %}
+{% endblock %}

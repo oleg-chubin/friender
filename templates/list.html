@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+      {% if profiles %}
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Age</th>
+              <th scope="col">Sex</th>
+              <th scope="col">State</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for profile in profiles %}
+                <tr>
+                  <td>{{ profile.name|lower|capfirst }}</td>
+                  <td>{{ profile.age }}</td>
+                  <td>{{ profile.sex }}</td>
+                  <td>{{ profile.state }}</td>
+                </tr>
+           {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+          <h5>Nothing to display</h5>
+      {% endif %}
+
+{% endblock %}

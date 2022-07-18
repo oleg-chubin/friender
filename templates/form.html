@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+      <div class="row">
+        <div class="col-6">
+                    <div class="card">
+                    <div class="card-header">
+                        Registration form
+                    </div>
+                    <div class="card-body">
+                    <form method='post' action='{{ register_url }}'>
+                      <div class="mb-3">
+                          <label for="name" class="form-label">Name</label>
+                          <input id="name" class="form-control" type="text" name="name"/>
+                          <div id="emailHelp" class="form-text">Enter thing's name</div>
+                      </div>
+                      <div class="mb-3">
+                          <label for="age" class="form-label">Age</label>
+                          <input id="age" class="form-control" type="number" name="age"/>
+                          <div id="emailHelp" class="form-text">Enter amount of things</div>
+                      </div>
+                        <div class="mb-3">
+                              <label for="max_bill_value" class="form-label">Max bill value</label>
+                              <input id="max_bill_value" class="form-control" type="text" name="max_bill_value"/>
+                              <div id="emailHelp" class="form-text">Max guest's bill value</div>
+                        </div>
+                        <div class="mb-3">
+                              <label for="name" class="form-label">Hobbies</label>
+                              <input id="name" class="form-control" type="text" name="hobby"/>
+                              <div id="emailHelp" class="form-text">Enter coma separated hobbies</div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                          <button type="submit" class="btn btn-primary">Donate</button>
+                        </div>
+                    </form>
+                    </div>
+                    </div>
+        </div>
+        <div class="col-6">
+          <div class="container">
+            <div class="row">
+              <div class="col">
+              <div class="card">
+                <div class="card-header">
+                    Search
+                </div>
+                  <ul class="list-group list-group-flush">
+
+                  {% for row in data %}
+                      <li class="list-group-item">
+                        {{ row.name }}
+                          ({% for hobby in row.hobbies.all %} {{ hobby }} {% endfor %})
+                          ({{ row.place.lat }}, {{ row.place.long }}) max_bill is {{ row.max_guest_bill }}
+
+                      </li>
+                  {% endfor %}
+
+                      <li class="list-group-item">
+                          ...
+                      </li>
+                  </ul>
+                  <div class="card-footer">
+                    <form method='post' action='{{ find_url }}'>
+                      <div class="col-12">
+                      <div class="mb-3">
+                          <label for="name" class="form-label">Hobbies</label>
+                          <input id="name" class="form-control" type="text" name="hobby"/>
+                          <div id="emailHelp" class="form-text">Enter your hobies</div>
+                      </div>
+                        <div class="mb-3">
+                              <label for="desired_bill_value" class="form-label">Desired bill value</label>
+                              <input id="desired_bill_value" class="form-control" type="text" name="desired_bill_value"/>
+                              <div id="emailHelp" class="form-text">bill value that host is ready to pay</div>
+                        </div>
+                        <div class="mb-3">
+                              <label for="name" class="form-label">Name</label>
+                              <input id="name" class="form-control" type="text" name="name"/>
+                              <div id="emailHelp" class="form-text">Name</div>
+                        </div>
+                        <div class="d-grid gap-2">
+                          <button type="submit" class="btn btn-primary">Request</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+{% endblock %}

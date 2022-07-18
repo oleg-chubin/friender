@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% for place in places %}
+    <h3>Place</h3>
+        <p>
+        {{ place.name }} ({{ place.lat }}, {{ place.long }})
+        </p>
+    <ul>
+        <li>{{ place.friend_set.all|length }}</li>
+    </ul>
+    {% endfor %}
+        <a href="{% url "friends:main" %}">Back to main</a>
+{% endblock %}
