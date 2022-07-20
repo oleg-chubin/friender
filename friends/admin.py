@@ -19,14 +19,14 @@ admin.site.register(Friend, FriendAdmin)
 
 
 class HostAdmin(admin.ModelAdmin):
-    fields = ['name', 'age', 'place', 'max_guest_bill']
+    fields = ['name', 'age', 'place', 'max_guest_bill', 'hobbies']
     list_display = ('name', 'age', 'place', 'state')
 
 admin.site.register(Host, HostAdmin)
 
 
 class GuestAdmin(admin.ModelAdmin):
-    fields = ['name', 'age', 'place', 'desired_order_value']
+    fields = ['name', 'age', 'place', 'desired_order_value', 'hobbies']
     list_display = ('name', 'age', 'place', 'state')
 
 admin.site.register(Guest, GuestAdmin)

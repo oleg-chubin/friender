@@ -3,22 +3,42 @@ import json
 from django.http import HttpResponse
 from django.urls import reverse
 from django.db import transaction
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
-from friends.models import Friend, Hobby, Establishment, Host, Arrangement, Guest
+from friends.forms import HostForm, FriendFeedbackForm, GuestForm
+from friends.models import Friend, Hobby, Establishment, Host, Arrangement, Guest, FriendRating
 
 
-def register_form(request):
+def register_form(request, host_form=None, guest_form=None):
     context = {
         'find_url': reverse('friends:find_friend'),
         'register_url': reverse("friends:register", kwargs={"sex": "m"}),
+        'host_form': host_form if host_form else HostForm(),
+        'guest_form': guest_form if guest_form else GuestForm(),
         'data': Host.objects.filter(state=False).select_related('place').prefetch_related('hobbies').order_by('name')[:50]
     }
     return render(request, 'form.html', context)
 
 
+def share_friend_feedback(request, **kwargs):
+    context = {}
+    if request.method == 'POST':
+        form = FriendFeedbackForm(request.POST)
+        if form.is_valid():
+            FriendRating.objects.create(
+                rating=form.cleaned_data['rating'],
+                feedback=form.cleaned_data['feedback'],
+                target_id=kwargs['id']
+            )
+            return redirect('friends:list')
+        context['form'] = form
+    else:
+        context['form'] = FriendFeedbackForm()
+    return render(request, 'friend_feedback_form.html', context)
+
+
 def list(request):
-    context = {'profiles': Friend.objects.all()}
+    context = {'profiles': Friend.objects.all().prefetch_related('friendrating_set')}
     return render(request, 'list.html', context)
 
 def place(request, id=None):
@@ -28,20 +48,22 @@ def place(request, id=None):
 
 @transaction.atomic
 def find_someone(request):
-    hobbies = [i.strip().lower() for i in request.POST['hobby'].split(',')]
-    desired_bill = request.POST['desired_bill_value']
-    name = request.POST['name']
+    form = GuestForm(request.POST)
+
+    if not form.is_valid():
+        return register_form(guest_form=form)
+
+    guest = form.save(commit=False)
+    guest.age = 23
+    guest.save()
+    form.save_m2m()
 
     available_profiles = Host.objects.order_by('id').filter(state=False)
     interesting_profiles = available_profiles.filter(
-        hobbies__name__in=hobbies,
-        max_guest_bill__gte=desired_bill
+        hobbies__in=form.cleaned_data['hobbies'],
+        max_guest_bill__gte=form.cleaned_data['desired_order_value']
     )
-    guest = Guest.objects.create(
-        name=name,
-        age=23,
-        desired_order_value=int(desired_bill)
-    )
+
     profile = interesting_profiles.first()
     arrangement = None
     if profile:
@@ -58,20 +80,11 @@ def find_someone(request):
 
 
 def register(request, sex=None):
-    name = request.POST['name']
-    friend = Host.objects.create(
-        name=name,
-        age=int(request.POST['age']),
-        max_guest_bill=int(request.POST['max_bill_value']),
-        sex=sex
-    )
-    hobbies = [i.strip().lower() for i in request.POST['hobby'].split(',')]
-    hobby_objects = []
-    for hobby in hobbies:
-        hobby_obj, _ = Hobby.objects.get_or_create(name=hobby)
-        hobby_objects.append(hobby_obj)
-
-    friend.hobbies.add(*hobby_objects)
+    form = HostForm(request.POST)
+    if form.is_valid():
+        friend = form.save()
+    else:
+        return register_form(request, form)
 
     return render(
         request,

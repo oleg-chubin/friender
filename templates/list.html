@@ -14,7 +14,12 @@
           <tbody>
             {% for profile in profiles %}
                 <tr>
-                  <td>{{ profile.name|lower|capfirst }}</td>
+                  <td>
+                      <a href="{% url "friends:friend_feedback" id=profile.id %}">{{ profile.name|lower|capfirst }}</a>
+                      {% for rating in profile.friendrating_set.all %}
+                          {{ rating.rating }}
+                      {% endfor %}
+                  </td>
                   <td>{{ profile.age }}</td>
                   <td>{{ profile.sex }}</td>
                   <td>{{ profile.state }}</td>
