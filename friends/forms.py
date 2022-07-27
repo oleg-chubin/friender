@@ -1,3 +1,4 @@
+from ajax_select.fields import AutoCompleteSelectMultipleField
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
@@ -30,6 +31,8 @@ class FriendFeedbackForm(forms.Form):
 
 
 class HostForm(forms.ModelForm):
+    hobbies = AutoCompleteSelectMultipleField('hobbies')
+
     class Meta:
         model = Host
         exclude = ('state', )

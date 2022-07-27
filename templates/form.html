@@ -12,6 +12,7 @@
                     <div class="card-body">
                     <form method='post' action='{{ register_url }}'>
                         {% csrf_token %}
+                        {{ host_form.media }}
                         {{ host_form|crispy }}
                         <div class="d-grid gap-2">
                           <button type="submit" class="btn btn-primary">Donate</button>

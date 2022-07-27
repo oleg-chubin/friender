@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 # Register your models here.
 from friends.models import Establishment, Friend, Host, Guest, FriendRating, EstablishmentRating, Arrangement
@@ -11,16 +12,59 @@ class EstablishmentAdmin(admin.ModelAdmin):
 admin.site.register(Establishment, EstablishmentAdmin)
 
 
-class FriendAdmin(admin.ModelAdmin):
-    fields = ['name', 'age', 'place']
-    list_display = ('name', 'age', 'place', 'state')
+class FriendRatingInline(admin.TabularInline):
+    model = FriendRating
+    extra = 1
 
-admin.site.register(Friend, FriendAdmin)
+
+class ArrangementInline(admin.StackedInline):
+    model = Arrangement
+
+
+def make_booked(modeladmin, request, queryset):
+    queryset.update(state=True)
+
+
+@admin.register(Friend)
+class FriendAdmin(admin.ModelAdmin):
+    # fields = ['name', 'age', 'place', 'sex']
+    list_display = ('html_name', 'age', 'place', 'state', 'partner_sex')
+    readonly_fields = ['sex', 'partner_sex']
+    search_fields = ['name']
+    list_filter = ('sex', 'place', 'state')
+
+    filter_vertical = ['hobbies', ]
+
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'age', 'sex', 'partner_sex')
+        }),
+        ('Advanced options', {'fields': ('place', 'hobbies', )}
+         )
+    )
+
+    @admin.action(description='Mark selected people as active')
+    def make_active(self, request, queryset):
+        queryset.update(state=False)
+
+    actions = [make_booked, make_active, ]
+
+    @admin.display(description='Name')
+    def html_name(self, obj):
+        return mark_safe(f'<s>{obj.name}</s>') if obj.state else obj.name
+
+    @admin.display(description='Desired sex')
+    def partner_sex(self, obj):
+        return 'Male' if obj.sex.lower() == 'f' else 'Female'
+
+
 
 
 class HostAdmin(admin.ModelAdmin):
     fields = ['name', 'age', 'place', 'max_guest_bill', 'hobbies']
     list_display = ('name', 'age', 'place', 'state')
+
+    inlines = [FriendRatingInline, ArrangementInline]
 
 admin.site.register(Host, HostAdmin)
 
