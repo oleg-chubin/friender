@@ -7,10 +7,18 @@ class PubManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(type='Pub')
 
+    def get_available_pubs(self):
+        return self.get_queryset().filter(max_visitors__gt=F('visitor_count'))
+
 
 class RestaurantManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(type='Restaurant')
+
+
+class FriendsManager(models.Manager):
+    def get_male_pub_visitors(self, pub):
+        return self.filter(sex='m', place=pub)
 
 
 class Hobby(models.Model):
@@ -26,10 +34,21 @@ class Establishment(models.Model):
     lat = models.FloatField(db_column='latitude')
     long = models.FloatField(db_column='longitude')
     subjects = models.ManyToManyField(Hobby)
+    visitor_count = models.IntegerField()
+    max_visitors = models.IntegerField()
     type = models.CharField(max_length=16, choices=[('Pub', 'Pub'), ('Restaurant', 'Restaurant')])
 
     def __str__(self):
         return f'{self.type} {self.name}({self.lat}, {self.long})'
+
+    def get_active_visitors_count(self):
+        return self.friend_set.filter(state=0).count()
+
+    def has_free_places(self):
+        return self.max_visitors > self.get_active_visitors_count()
+
+    def get_male_visitors(self):
+        return self.friend_set.filter(sex='m')
 
 
 class Pub(Establishment):
@@ -54,6 +73,7 @@ def subjects_hobby_updater(sender, instance, action, **kwargs):
         for friend in instance.friend_set.all():
             for subj in subjects:
                 friend.hobbies.add(subj)
+                
 
 models.signals.m2m_changed.connect(receiver=subjects_hobby_updater, sender=Establishment.subjects.through)
 
@@ -80,6 +100,14 @@ class Friend(models.Model):
     def __str__(self):
         return f'{self.name}({self.age} y.o.)'
 
+    objects = FriendsManager()
+
+class FriendProfile(models.Model):
+    friend = models.OneToOneField(Friend, on_delete=models.CASCADE)
+    photo = models.ImageField()
+    description = models.TextField()
+
+
 
 class Host(Friend):
     max_guest_bill = models.IntegerField()
@@ -97,6 +125,7 @@ class Arrangement(models.Model):
 
 class Rating(models.Model):
     rating = models.IntegerField()
+    photo =models.ImageField(upload_to='raing_photoes', null=True)
     feedback = models.TextField()
 
     class Meta:

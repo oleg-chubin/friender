@@ -15,7 +15,7 @@
                         {{ host_form.media }}
                         {{ host_form|crispy }}
                         <div class="d-grid gap-2">
-                          <button type="submit" class="btn btn-primary">Donate</button>
+                          <button type="submit" {% if donate_disabled %} disabled {% endif %} class="btn btn-primary">Donate</button>
                         </div>
                     </form>
                     </div>
@@ -35,7 +35,7 @@
                       <li class="list-group-item">
                         {{ row.name }}
                           ({% for hobby in row.hobbies.all %} {{ hobby }} {% endfor %})
-                          ({{ row.place.lat }}, {{ row.place.long }}) max_bill is {{ row.max_guest_bill }}
+                          {{ row.place.name }}({{ row.place.lat }}, {{ row.place.long }}) max_bill is {{ row.max_guest_bill }}
 
                       </li>
                   {% endfor %}
@@ -49,7 +49,7 @@
                         {% csrf_token %}
                         {{ guest_form|crispy }}
                         <div class="d-grid gap-2">
-                          <button type="submit" class="btn btn-primary">Request</button>
+                          <button {% if not request_enabled %} disabled {% endif %} type="submit" class="btn btn-primary">Request</button>
                         </div>
                       </div>
                     </form>

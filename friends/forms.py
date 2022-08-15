@@ -4,7 +4,9 @@ from crispy_forms.layout import Submit
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator, MinLengthValidator
-from .models import Host, Guest
+from django.db.models import F
+
+from .models import Host, Guest, Establishment, FriendRating
 
 
 def validate_word_count(value):
@@ -14,28 +16,46 @@ def validate_word_count(value):
             params={'value': value},
         )
 
-class FriendFeedbackForm(forms.Form):
-    rating = forms.IntegerField(
-        validators=[
-            MaxValueValidator(5),
-            MinValueValidator(1)
-        ]
-    )
-    feedback = forms.Field(
-        widget=forms.Textarea(),
-        validators=[
-            MinLengthValidator(20, message="Please provide more details"),
-            validate_word_count
-        ]
-    )
+# class FriendFeedbackForm(forms.Form):
+#     rating = forms.IntegerField(
+#         validators=[
+#             MaxValueValidator(5),
+#             MinValueValidator(1)
+#         ]
+#     )
+#     feedback = forms.Field(
+#         widget=forms.Textarea(),
+#         validators=[
+#             MinLengthValidator(20, message="Please provide more details"),
+#             validate_word_count
+#         ]
+#     )
+#     photo = forms.ImageField()
+
+class FriendFeedbackForm(forms.ModelForm):
+    class Meta:
+        model = FriendRating
+        exclude = ('target', )
 
 
 class HostForm(forms.ModelForm):
     hobbies = AutoCompleteSelectMultipleField('hobbies')
 
+    # place = forms.ModelChoiceField(
+    #     queryset=Establishment.objects.exclude(visitor_count__gte=F('max_visitors'))
+    # )
+
     class Meta:
         model = Host
-        exclude = ('state', )
+        exclude = ('state', 'place')
+
+
+class PlaceForm(forms.Form):
+    place = forms.ModelChoiceField(
+        label='',
+        queryset=Establishment.objects.all(),
+        widget=forms.Select(attrs={"onChange": "form.submit();"})
+    )
 
 
 class GuestForm(forms.ModelForm):

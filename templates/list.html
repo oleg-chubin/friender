@@ -17,7 +17,7 @@
                   <td>
                       <a href="{% url "friends:friend_feedback" id=profile.id %}">{{ profile.name|lower|capfirst }}</a>
                       {% for rating in profile.friendrating_set.all %}
-                          {{ rating.rating }}
+                          {{ rating.rating }} {% if rating.photo %}<img style="max-height: 100px;" src="{{ rating.photo.url }}"/> {% endif %}
                       {% endfor %}
                   </td>
                   <td>{{ profile.age }}</td>

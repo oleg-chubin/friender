@@ -6,7 +6,7 @@ from friends.models import Establishment, Friend, Host, Guest, FriendRating, Est
 
 
 class EstablishmentAdmin(admin.ModelAdmin):
-    fields = ['name', 'subjects', 'lat', 'long', 'type']
+    fields = ['name', 'subjects', 'lat', 'long', 'type', 'visitor_count', 'max_visitors']
     list_display = ('name', 'lat', 'long')
 
 admin.site.register(Establishment, EstablishmentAdmin)
