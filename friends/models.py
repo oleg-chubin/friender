@@ -125,7 +125,7 @@ class Arrangement(models.Model):
 
 class Rating(models.Model):
     rating = models.IntegerField()
-    photo =models.ImageField(upload_to='raing_photoes', null=True)
+    photo =models.ImageField(upload_to='raing_photoes', null=True, blank=True)
     feedback = models.TextField()
 
     class Meta:
@@ -146,3 +146,7 @@ def hobby_updater(sender, instance, **kwargs):
             instance.hobbies.add(hobby)
 
 models.signals.pre_save.connect(receiver=hobby_updater, sender=Friend)
+
+
+class QueuePlace(models.Model):
+    value = models.IntegerField()

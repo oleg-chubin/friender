@@ -1,16 +1,23 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework import generics, views
+from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from rest_framework.parsers import JSONParser, FileUploadParser
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly, DjangoModelPermissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from friends.models import Establishment, FriendRating
 
 # Create your views here.
+from friends_api.authentication import BearerTokenAuthentication
 from friends_api.serializers import PlaceSerializer, FriendRatingSerializer
 
 
+
 class PlacesAPIView(generics.ListCreateAPIView):
+    authentication_classes = [BearerTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     queryset = Establishment.objects.all()
     serializer_class = PlaceSerializer
 

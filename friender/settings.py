@@ -39,23 +39,34 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    # 'djoser',
+    # 'rest_framework_simplejwt.token_blacklist',
     'ajax_select',
+    'django_celery_results',
+    'django_celery_beat',
     'friends',
     'friends_api',
     'crispy_forms',
     'crispy_bootstrap5',
     'notifications',
+    # 'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+    # 'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
+
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    # 'friends.middleware.ValueErrorMiddleware',
+    # 'friends.middleware.KeyErrorMiddleware',
 ]
 
 ROOT_URLCONF = 'friender.urls'
@@ -81,6 +92,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'friender.wsgi.application'
 
+# CELERY_CACHE_BACKEND = 'default'
+CELERY_CACHE_BACKEND = 'memory'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'default_cache_table',
+    },
+    'userlist': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'userlist_cache_table',
+    },
+
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
@@ -93,6 +118,9 @@ DATABASES = {
         'PASSWORD': os.environ.get('DB_PASSWORD', 'friender'),
         'HOST': '127.0.0.1',
         'PORT': '5432',
+        'TEST': {
+            'NAME': 'test_friender',
+        }
     }
 }
 
@@ -180,3 +208,17 @@ LOGGING = {
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 'rest_framework.authentication.BasicAuthentication',
+        # 'friends_api.authentication.BearerTokenAuthentication',
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
+
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_IGNORE_RESULT = False
+# CELERY_ALWAYS_EAGER = True
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'

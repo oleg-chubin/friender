@@ -39,7 +39,7 @@ class FriendFeedbackForm(forms.ModelForm):
 
 
 class HostForm(forms.ModelForm):
-    hobbies = AutoCompleteSelectMultipleField('hobbies')
+    # hobbies = AutoCompleteSelectMultipleField('hobbies')
 
     # place = forms.ModelChoiceField(
     #     queryset=Establishment.objects.exclude(visitor_count__gte=F('max_visitors'))

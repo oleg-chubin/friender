@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.shortcuts import redirect
-from django.urls import path, include
+from django.urls import path, re_path, include
 from django.conf import settings
 from ajax_select import urls as ajax_select_urls
 
@@ -27,6 +27,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('pals/', include('friends.urls', namespace='friends')),
     path('api/', include('friends_api.urls', namespace='api')),
+    re_path(r'^auth/', include('djoser.urls')),
+    re_path(r'^auth/', include('djoser.urls.authtoken')),
+    re_path(r'^auth/', include('djoser.urls.jwt')),
     path('^ajax_select/', include(ajax_select_urls)),
     path('', lambda request: redirect('/pals')),
     path('__debug__/', include('debug_toolbar.urls')),

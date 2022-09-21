@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+        <h3>Sorry! We have got some issues for you :)</h3>
+        <b> Error: {{ error_class }}</b> ({{ error_message }})</br>
+        <a href="{{ main_url }}">Back to main</a>
+{% endblock %}
