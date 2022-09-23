@@ -5,8 +5,9 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator, MinLengthValidator
 from django.db.models import F
+from django.forms import modelformset_factory, inlineformset_factory
 
-from .models import Host, Guest, Establishment, FriendRating
+from .models import Host, Guest, Establishment, FriendRating, ArrangementOrder, Arrangement
 
 
 def validate_word_count(value):
@@ -73,3 +74,6 @@ class GuestForm(forms.ModelForm):
     #     # self.helper.form_action = 'submit_survey'
     #     #
     #     # self.helper.add_input(Submit('submit', 'Submit'))
+
+OrderFormset = inlineformset_factory(
+    Arrangement, ArrangementOrder, fields=('item', 'amount'), extra=3)

@@ -123,6 +123,21 @@ class Arrangement(models.Model):
     place = models.ForeignKey(Establishment, on_delete=models.CASCADE)
 
 
+class MenuItem(models.Model):
+    place = models.ForeignKey(Establishment, on_delete=models.CASCADE)
+    name = models.CharField(max_length=64)
+    price = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.name} ({self.price})'
+
+
+class ArrangementOrder(models.Model):
+    arrangement = models.ForeignKey(Arrangement, on_delete=models.CASCADE)
+    item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
+    amount = models.IntegerField()
+
+
 class Rating(models.Model):
     rating = models.IntegerField()
     photo =models.ImageField(upload_to='raing_photoes', null=True, blank=True)

@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.utils.safestring import mark_safe
 
 # Register your models here.
-from friends.models import Establishment, Friend, Host, Guest, FriendRating, EstablishmentRating, Arrangement
+from friends.models import Establishment, Friend, Host, Guest, FriendRating, EstablishmentRating, Arrangement, MenuItem, \
+    ArrangementOrder, Hobby
 
 
 class EstablishmentAdmin(admin.ModelAdmin):
@@ -95,4 +96,25 @@ class ArrangementAdmin(admin.ModelAdmin):
     list_display = ('host', 'guest', 'place')
 
 admin.site.register(Arrangement, ArrangementAdmin)
+
+
+class MenuItemAdmin(admin.ModelAdmin):
+    fields = ['name', 'price', 'place']
+    list_display = ('name', 'price', 'place')
+
+admin.site.register(MenuItem, MenuItemAdmin)
+
+
+class HobbyAdmin(admin.ModelAdmin):
+    fields = ['name',]
+    list_display = ('name',)
+
+admin.site.register(Hobby, HobbyAdmin)
+
+
+class ArrangementOrderAdmin(admin.ModelAdmin):
+    fields = ['arrangement', 'item', 'amount']
+    list_display = ('arrangement', 'item', 'amount')
+
+admin.site.register(ArrangementOrder, ArrangementOrderAdmin)
 

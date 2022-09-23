@@ -22,7 +22,7 @@ from django.views.generic import TemplateView, ListView, CreateView
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
 
-from friends.forms import HostForm, FriendFeedbackForm, GuestForm, PlaceForm
+from friends.forms import HostForm, FriendFeedbackForm, GuestForm, PlaceForm, OrderFormset
 from friends.models import Friend, Hobby, Establishment, Host, Arrangement, Guest, FriendRating
 from friends.tasks import process_image, rotate_image, create_image_if_necessary
 from friends.utils import Queue
@@ -125,7 +125,7 @@ def find_someone(request):
         queue = Queue(Queue.FIFO)
         queue.add(guest.id)
 
-    return render(request, 'search_complete.html', {'arrangement': arrangement})
+    return redirect('friends:preorder', arrangement_id=arrangement.id)
 
 
 def make_arrangement(guest, profile):
@@ -145,8 +145,6 @@ def long_time_task():
 
 @transaction.atomic
 def register(request, sex=None):
-    thread = Thread(None, long_time_task, daemon=True)
-    thread.run()
     form = HostForm(request.POST)
 
     if form.is_valid():
@@ -154,7 +152,6 @@ def register(request, sex=None):
         friend.place_id = request.session.get('place_id', Establishment.objects.first().id)
         friend.save()
         form.save_m2m()
-        caches['userlist'].clear()
     else:
         return register_form(request, form)
 
@@ -219,3 +216,17 @@ class CreatePlaceView(CreateView):
     success_url = reverse_lazy('friends:places')
 
 
+def make_preorder(request, arrangement_id):
+    arrangement = Arrangement.objects.get(id=arrangement_id)
+    if request.method == 'POST':
+        formset = OrderFormset(
+            instance=arrangement,
+            data=request.POST,
+            files=request.FILES
+        )
+        if formset.is_valid():
+            formset.save()
+            return redirect('friends:main')
+    else:
+        formset = OrderFormset(instance=arrangement)
+    return render(request, 'preorder.html', {'formset': formset})

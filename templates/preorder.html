@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        {% for form in formset.forms %}
+            {{ form }}<br/>
+        {% endfor %}
+         <button type="submit">submit</button>
+    </form>
+{% endblock %}
