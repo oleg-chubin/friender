@@ -1,9 +1,15 @@
 Django==4.0.5
 psycopg2-binary==2.9.3
+celery
+cryptography>=3.5
 crispy-bootstrap5==0.6
+django-ajax-selects
+django-celery-beat
+django-celery-results
 django-crispy-forms==1.14.0
 django-debug-toolbar==3.5.0
 djangorestframework==3.13.1
 django-filter==22.1
 djoser==2.1.0
 Markdown==3.4.1
+Pillow
