@@ -49,7 +49,7 @@ class TestFindHost(TransactionTestCase):
                 'hobbies': [self.hobby.id]
             }
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
 
     def test_success(self):
         original_make_arrangement = views.make_arrangement

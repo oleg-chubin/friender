@@ -110,9 +110,9 @@ def find_someone(request):
 
     available_profiles = Host.objects.filter(state=False)
     ordered_profiles = available_profiles.order_by('id')
-    # interesting_profiles = ordered_profiles.select_for_update().filter(
-    interesting_profiles=ordered_profiles.filter(
-            hobbies__in=form.cleaned_data['hobbies'])
+    interesting_profiles = ordered_profiles.select_for_update().filter(
+        hobbies__in=form.cleaned_data['hobbies']
+    )
     interesting_profiles = interesting_profiles.filter(
         max_guest_bill__gte=form.cleaned_data['desired_order_value']
     )
@@ -121,11 +121,14 @@ def find_someone(request):
     arrangement = None
     if profile:
         arrangement = make_arrangement(guest, profile)
-    else:
-        queue = Queue(Queue.FIFO)
-        queue.add(guest.id)
+        return redirect('friends:preorder', arrangement_id=arrangement.id)
 
-    return redirect('friends:preorder', arrangement_id=arrangement.id)
+    queue = Queue(Queue.FIFO)
+    queue.add(guest.id)
+    return redirect('friends:main')
+
+
+
 
 
 def make_arrangement(guest, profile):

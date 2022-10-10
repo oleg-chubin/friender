@@ -79,8 +79,7 @@ class TestQueue(TestCase):
             queue = Queue(strategy)
             queue.add(value)
             queue.pop()
-            with self.assertRaises(ValueError):
-                value = queue.pop()
+            self.assertIsNone(queue.pop())
 
 
 class TestFindSomeoneForm(TestCase):
@@ -99,13 +98,12 @@ class TestFindSomeoneForm(TestCase):
                 'hobbies': guest_hobbies
             }
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
         guests = Guest.objects.all()
         self.assertEqual(len(guests), 1)
         guest = guests[0]
         self.assertEqual(guest.name, guest_name)
         self.assertEqual(guest.desired_order_value, guest_desired_order_value)
-        self.assertIs(response.context['arrangement'], None)
 
 
 class TestRegisterForm(TestCase):
